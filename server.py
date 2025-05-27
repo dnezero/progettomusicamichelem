@@ -1,11 +1,13 @@
-import http.server
-import socketserver
+from flask import Flask, send_from_directory
+import os
 
-PORT = 8000  # Puoi cambiare questa porta se è già in uso
+app = Flask(__name__)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-Handler = http.server.SimpleHTTPRequestHandler
+@app.route('/')
+def serve_html():
+    return send_from_directory(BASE_DIR, 'index.html', mimetype='text/html')
 
-with socketserver.TCPServer(("", PORT), Handler) as httpd:
-    print(f"Server avviato su http://localhost:{PORT}")
-    print("Premi Ctrl+C per fermare il server.")
-    httpd.serve_forever()
+@app.route('/api/hello')
+def api_hello():
+    return {'message': 'Ciao dal server Python su Render!'}
