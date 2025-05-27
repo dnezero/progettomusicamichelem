@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>progettomusicamichelem</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* Stili CSS integrati */
+        :root {
+            --bg-color: #0d0d1a;
+            --text-color: #f0f0f5;
+            --primary-color: #0a0a22;
+            --accent-color: #ff5733; /* Arancione brillante */
+            --secondary-accent: #6c71c4; /* Viola/blu medio */
+            --tertiary-accent: #33aaff; /* Blu ciano */
+            --shadow-dark: rgba(0, 0, 0, 0.6);
+            --shadow-light: rgba(255, 255, 255, 0.03);
+            --border-radius: 18px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #181828 0%, #23234a 100%);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.7;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+            animation: fadeIn 1.2s ease-out;
+            perspective: 1000px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        main {
+            flex: 1;
+            max-width: 1000px;
+            margin: 2.5rem auto;
+            padding: 0 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+            position: relative; /* Per posizionare il contenuto sopra gli effetti */
+            z-index: 1;
+            /* Glassmorphism effect */
+            background: rgba(20, 20, 40, 0.25);
+            backdrop-filter: blur(8px) saturate(140%);
+            -webkit-backdrop-filter: blur(8px) saturate(140%);
+            border-radius: var(--border-radius);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+        }
+
+        section {
+            background: rgba(30, 30, 60, 0.35);
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 25px var(--shadow-dark), 0 -5px 10px var(--shadow-light);
+            transition: transform 0.4s ease-out, box-shadow 0.4s ease-out;
+            position: relative;
+            overflow: hidden;
+            border: 1.5px solid rgba(255,255,255,0.09);
+            z-index: 2; /* Assicurati che le sezioni siano sopra lo sfondo dinamico */
+        }
+
+        section:hover {
+            transform: translateY(-8px) scale(1.005);
+            background: rgba(40, 40, 80, 0.45);
+            box-shadow: 0 15px 35px var(--shadow-dark), 0 -8px 15px rgba(255,255,255,0.13);
+        }
+
+        section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%);
+            transform: rotate(45deg);
+            transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        section:hover::before {
+            transform: rotate(0deg);
+            opacity: 1;
+        }
+
+        .music-player-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2.5rem;
+        }
+
+        .player-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            width: 100%;
+            position: relative;
+            z-index: 10;
+            background: rgba(40, 40, 80, 0.22);
+            border-radius: 24px;
+            box-shadow: 0 4px 24px 0 rgba(31, 38, 135, 0.10);
+            padding: 1.5rem 1.5rem;
+            backdrop-filter: blur(10px) saturate(120%);
+            -webkit-backdrop-filter: blur(10px) saturate(120%);
+        }
+
+        .album-cover {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 6px 30px 0 rgba(31, 38, 135, 0.18), 0 0 30px var(--accent-color);
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55), box-shadow 0.5s ease;
+            border: 3px solid rgba(255,255,255,0.18);
+            background: rgba(255,255,255,0.08);
+            animation: rotateAlbum 20s linear infinite;
+        }
+
+        .album-cover:hover {
+            transform: scale(1.1) rotate(360deg);
+            box-shadow: 0 10px 25px var(--shadow-dark), 0 0 50px var(--accent-color);
+            animation-play-state: paused;
+        }
+
+        @keyframes rotateAlbum {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .player-details {
+            text-align: center;
+            background: rgba(255,255,255,0.07);
+            border-radius: 18px;
+            padding: 1.2rem 1.5rem;
+            box-shadow: 0 2px 12px 0 rgba(31, 38, 135, 0.10);
+            backdrop-filter: blur(6px) saturate(120%);
+            -webkit-backdrop-filter: blur(6px) saturate(120%);
+        }
+
+        #song-title {
+            margin-bottom: 0.8rem;
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--accent-color);
+            text-shadow: 0 0 10px rgba(255, 87, 51, 0.8);
+            letter-spacing: 1px;
+        }
+
+        #artist-name {
+            font-size: 1.3rem;
+            color: var(--text-color);
+            opacity: 0.7;
+            margin-bottom: 1.5rem;
+        }
+
+        #audio-player {
+            width: 100%;
+            max-width: 500px;
+            animation: playerBounce 0.8s infinite alternate ease-in-out;
+        }
+
+        @keyframes playerBounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-2px); }
+        }
+
+        .yt-button {
+            display: inline-block;
+            background: linear-gradient(90deg, rgba(255,0,0,0.7) 0%, rgba(255,87,51,0.7) 100%);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 1.8rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 24px 0 rgba(255, 87, 51, 0.18);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+            transform: translateZ(0);
+            border: 1.5px solid rgba(255,255,255,0.13);
+            backdrop-filter: blur(2px) saturate(120%);
+            -webkit-backdrop-filter: blur(2px) saturate(120%);
+        }
+
+        .yt-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transition: width 0.4s ease, height 0.4s ease, top 0.4s ease, left 0.4s ease;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+        }
+
+        .yt-button:hover {
+            background: linear-gradient(90deg, rgba(255,87,51,0.85) 0%, rgba(255,0,0,0.85) 100%);
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 10px 20px rgba(255, 0, 0, 0.6);
+        }
+
+        .yt-button:hover::before {
+            width: 200%;
+            height: 200%;
+            opacity: 1;
+            top: -50%;
+            left: -50%;
+        }
+
+        .info-section p {
+            text-align: justify;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            font-weight: 300;
+            color: rgba(240, 240, 245, 0.9);
+            background: rgba(255,255,255,0.06);
+            border-radius: 12px;
+            padding: 0.7rem 1rem;
+            box-shadow: 0 1px 6px 0 rgba(31, 38, 135, 0.07);
+        }
+
+        /* Il visualizzatore principale rimane come prima, ma le barre saranno generate altrove */
+        .visualizer-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            width: 100%;
+            height: 120px;
+            gap: 4px;
+            margin-top: 2rem;
+            border-radius: 8px;
+            overflow: hidden;
+            background: rgba(40, 40, 80, 0.18);
+            box-shadow: 0 2px 12px 0 rgba(31, 38, 135, 0.10), 0 0 20px rgba(108, 113, 196, 0.13);
+            border: 1.5px solid rgba(255,255,255,0.08);
+            backdrop-filter: blur(6px) saturate(120%);
+            -webkit-backdrop-filter: blur(6px) saturate(120%);
+        }
+
+        /* --- Nuovi stili per le barre di sfondo dinamiche --- */
+        .background-bar-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            z-index: -1; /* Dietro a tutto il contenuto e alle stelle, ma sopra lo sfondo base */
+            pointer-events: none;
+            /* Aggiungi un leggero gradiente per la profondità se vuoi */
+            /* background: radial-gradient(circle at center, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.4) 100%); */
+        }
+
+        .background-bar {
+            position: absolute;
+            background: linear-gradient(to top, rgba(255, 87, 51, 0.8), rgba(255, 160, 51, 0.8)); /* Gradiente arancione */
+            border-radius: 50%; /* Per farli apparire come cerchi/sfere in 3D */
+            box-shadow: 0 0 15px rgba(255, 87, 51, 0.7), 0 0 30px rgba(255, 160, 51, 0.5);
+            transition: transform 0.5s ease-out, opacity 0.5s ease-out, background 0.2s ease-out, box-shadow 0.2s ease-out;
+            will-change: transform, opacity, background, box-shadow;
+            opacity: 0;
+            transform: scale(0);
+        }
+
+        /* Effetto di dissolvenza per le barre di sfondo */
+        @keyframes fadeOutAndScale {
+            0% { opacity: 0.8; transform: scale(0); }
+            10% { opacity: 1; transform: scale(1); } /* Picco */
+            100% { opacity: 0; transform: scale(2); } /* Dissolvenza e ingrandimento */
+        }
+
+        /* Animazioni delle barre del visualizzatore principale */
+        .bar {
+            width: 6px;
+            min-height: 3px;
+            transform-origin: bottom;
+            transition: height 0.08s ease-out, background-color 0.08s ease-out, box-shadow 0.08s ease-out; /* Transizioni più veloci */
+            border-radius: 2px;
+            will-change: height, background-color, box-shadow; /* Ottimizzazione performance */
+            position: relative;
+            overflow: hidden; /* Per il pseudo-elemento */
+        }
+
+        .bar::after { /* Effetto eco */
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0; /* Altezza iniziale 0 */
+            background-color: rgba(255, 255, 255, 0.3); /* Colore più chiaro per l'eco */
+            transition: height 0.2s ease-out, opacity 0.2s ease-out;
+            opacity: 0;
+        }
+
+
+        footer {
+            background: rgba(30, 30, 60, 0.25);
+            backdrop-filter: blur(8px) saturate(120%);
+            -webkit-backdrop-filter: blur(8px) saturate(120%);
+            border-top: 1.5px solid rgba(255,255,255,0.08);
+            box-shadow: 0 -6px 15px var(--shadow-dark), 0 1.5px 8px 0 rgba(255,255,255,0.05) inset;
+            color: rgba(240, 240, 245, 0.7);
+            text-align: center;
+            padding: 1.8rem 0;
+            margin-top: 3rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+            position: relative;
+            z-index: 2; /* Sopra le animazioni di sfondo */
+        }
+
+        /* Stelle di sfondo */
+        .star-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            z-index: -2; /* Dietro a tutto, ma sopra il bg-color */
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: twinkle 3s infinite alternate, moveStar 15s linear infinite;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        /* Stili per le stelle, assicurati che siano definite altrove */
+        @keyframes moveStar {
+            from { transform: translate(0, 0); }
+            to { transform: translate(calc(var(--rand-x) * 100px), calc(var(--rand-y) * 100px)); }
+        }
+
+        /* Media Queries per la responsività */
+        @media (min-width: 768px) {
+            .player-container {
+                flex-direction: row;
+                text-align: left;
+                gap: 4rem;
+            }
+
+            .player-details {
+                text-align: left;
+            }
+
+            #audio-player {
+                max-width: none;
+            }
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            h2 {
+                font-size: 1.8rem;
+            }
+            main {
+                padding: 0 1rem;
+            }
+            section {
+                padding: 1.8rem;
+            }
+            .music-player-section {
+                gap: 1.5rem;
+            }
+            .album-cover {
+                width: 160px;
+                height: 160px;
+            }
+            #song-title {
+                font-size: 1.8rem;
+            }
+            #artist-name {
+                font-size: 1.1rem;
+            }
+            .bar {
+                width: 4px;
+                height: 60px;
+            }
+            .visualizer-container {
+                height: 80px;
+            }
+            .yt-button {
+                padding: 12px 24px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            h2 {
+                font-size: 1.5rem;
+            }
+            .album-cover {
+                width: 130px;
+                height: 130px;
+            }
+            #song-title {
+                font-size: 1.5rem;
+            }
+            #artist-name {
+                font-size: 1rem;
+            }
+            .bar {
+                width: 3px;
+            }
+        }
+
+        /* --- Effetti di luce lampo --- */
+        .light-flash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0;
+            background: radial-gradient(circle at var(--x,50%) var(--y,50%), rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.0) 70%);
+            animation: flashLight 0.5s ease-out forwards;
+            mix-blend-mode: lighten;
+        }
+        @keyframes flashLight {
+            0% { opacity: 0.8; }
+            60% { opacity: 0.5; }
+            100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <section class="music-player-section">
+            <div class="player-container">
+                <img src="copertina.jpg" alt="Copertina Album" class="album-cover">
+                <div class="player-details">
+                    <h2 id="song-title">Feel Good</h2>
+                    <p id="artist-name">Syn Cole</p>
+                    <audio id="audio-player" controls>
+                        <source src="tua-canzone.mp3" type="audio/mpeg">
+                        Il tuo browser non supporta l'elemento audio.
+                    </audio>
+                    <a id="youtube-link" href="https://www.youtube.com/watch?v=your-video-id" target="_blank" class="yt-button">Guarda su YouTube</a>
+                </div>
+            </div>
+            <div class="visualizer-container">
+                </div>
+        </section>
+
+        <section class="info-section why-i-like-it">
+            <h2>Perché mi piace questa musica</h2>
+            <p>Questa musica mi ricordava quando guardavo video su YouTube di "Endermanch" che era una persona che faceva video di informatica. Questa muscia mi ha portato molta nostalgia e la ascolto ogni giorno per i suoi battiti, la voce e l'effetto che crea in sè. </p>
+        </section>
+
+        <section class="info-section emotions-it-evokes">
+            <h2>Le emozioni che mi suscita</h2>
+            <p>Mi dà tanta energia e gioia, mi solleva da terra ed è come se mi sento pronto a sfidare qualsiasi cosa. Mi dimentico delle cose negative che mi sono successe e mi fa andare avanti. Mi ricarica moltissimo!</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Creato da Michele M. della 3^B</p>
+    </footer>
+
+    <div class="background-bar-container"></div>
+    <div class="star-background"></div>
+    <!-- Effetti di luce verranno aggiunti dinamicamente -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const audioPlayer = document.getElementById('audio-player');
+            const songTitle = document.getElementById('song-title');
+            const artistName = document.getElementById('artist-name');
+            const youtubeLink = document.getElementById('youtube-link');
+            const albumCover = document.querySelector('.album-cover');
+            const visualizerContainer = document.querySelector('.visualizer-container');
+            const backgroundBarContainer = document.querySelector('.background-bar-container');
+            // --- aggiungi container opzionale per i lampi di luce ---
+            const lightFlashContainer = document.createElement('div');
+            lightFlashContainer.style.position = 'fixed';
+            lightFlashContainer.style.top = '0';
+            lightFlashContainer.style.left = '0';
+            lightFlashContainer.style.width = '100vw';
+            lightFlashContainer.style.height = '100vh';
+            lightFlashContainer.style.pointerEvents = 'none';
+            lightFlashContainer.style.zIndex = '0';
+            document.body.appendChild(lightFlashContainer);
+
+            // --- Configurazione della Canzone ---
+            const songData = {
+                title: 'Light It Up',
+                artist: 'Robin Hustin x TobiMorrow',
+                audioSrc: 'tua-canzone.mp3', // Assicurati che questo file sia nella stessa directory o percorso relativo
+                coverSrc: 'copertina.jpg', // Assicurati che questo file sia nella stessa directory o percorso relativo
+                youtubeUrl: 'https://www.youtube.com/watch?v=bdE_SyHad90' // **CAMBIA QUESTO ID con il tuo video YouTube!**
+            };
+
+            songTitle.textContent = songData.title;
+            artistName.textContent = songData.artist;
+            audioPlayer.src = songData.audioSrc;
+            albumCover.src = songData.coverSrc;
+            youtubeLink.href = songData.youtubeUrl;
+
+            let audioContext;
+            let analyser;
+            let source;
+            let dataArray;
+
+            // --- Visualizzatore Classico (in basso) ---
+            const numSpectrumBars = 64; // Numero di barre per il visualizzatore standard
+            let spectrumBars = [];
+
+            // Genera le barre del visualizzatore classico dinamicamente
+            for (let i = 0; i < numSpectrumBars; i++) {
+                const bar = document.createElement('div');
+                bar.classList.add('bar');
+                visualizerContainer.appendChild(bar);
+                spectrumBars.push(bar);
+            }
+
+            // Inizializza l'AudioContext solo dopo un'interazione dell'utente
+            const initAudioContext = () => {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    analyser = audioContext.createAnalyser();
+
+                    try {
+                        source = audioContext.createMediaElementSource(audioPlayer);
+                        source.connect(analyser);
+                        analyser.connect(audioContext.destination);
+                        analyser.fftSize = 256; // Dimensione dell'FFT
+                        dataArray = new Uint8Array(analyser.frequencyBinCount);
+                        console.log("AudioContext e Analyser connessi con successo.");
+                    } catch (e) {
+                        console.warn("Impossibile connettere l'elemento media source (potrebbe essere un problema cross-origin o l'elemento non è pronto):", e);
+                        visualizerContainer.style.display = 'none'; // Nascondi il visualizzatore classico
+                        console.log("Visualizzatore principale disabilitato a causa di un errore (probabile cross-origin).");
+                        return;
+                    }
+                }
+            };
+
+            // Funzione per disegnare il visualizzatore classico
+            const drawSpectrumVisualizer = () => {
+                if (!audioPlayer.paused && audioContext && audioContext.state === 'running') {
+                    requestAnimationFrame(drawSpectrumVisualizer);
+
+                    analyser.getByteFrequencyData(dataArray);
+
+                    let totalVolume = 0;
+
+                    for (let i = 0; i < numSpectrumBars; i++) {
+                        const bar = spectrumBars[i];
+                        const frequencyIndex = Math.floor(i * (dataArray.length / numSpectrumBars));
+                        const value = dataArray[frequencyIndex];
+                        const barHeight = (value / 255) * 90 + 5; // Altezza da 5% a 95%
+                        totalVolume += value;
+
+                        bar.style.height = `${barHeight}%`;
+
+                        const hue = 240 - (value * 0.7);
+                        const saturation = 70 + (value * 0.1);
+                        const lightness = 50 + (value * 0.1);
+
+                        bar.style.background = `linear-gradient(to top, hsl(${hue}, ${saturation}%, ${lightness}%), hsl(${hue + 30}, ${saturation}%, ${lightness + 10}%))`;
+                        bar.style.boxShadow = `0 0 10px hsla(${hue}, ${saturation}%, ${lightness}%, 0.7), 0 0 20px hsla(${hue}, ${saturation}%, ${lightness}%, 0.4)`;
+
+                        // Effetto eco (pseudo-elemento ::after)
+                        bar.style.setProperty('--echo-height', `${(value / 255) * 50}%`);
+                        bar.style.setProperty('--echo-opacity', `${(value / 255) * 0.5}`); // Più visibile
+                    }
+
+                    // Trigger per le barre di sfondo "esplosive"
+                    const avgVolume = totalVolume / numSpectrumBars;
+                    if (avgVolume > 70 && Math.random() < 0.25) {
+                        createBackgroundBar(avgVolume);
+                    }
+                    // --- Effetto lampo di luce SOLO ai beat più alti ---
+                    if (avgVolume > 150 && Math.random() < 0.5) {
+                        createLightFlash(avgVolume);
+                    } else if (avgVolume > 130 && Math.random() < 0.15) {
+                        createLightFlash(avgVolume * 0.7);
+                    }
+                } else {
+                    spectrumBars.forEach(bar => {
+                        bar.style.height = '3px';
+                        bar.style.background = 'var(--secondary-accent)';
+                        bar.style.boxShadow = 'none';
+                        bar.style.setProperty('--echo-height', '0');
+                        bar.style.setProperty('--echo-opacity', '0');
+                    });
+                }
+            };
+
+            // Funzione per creare un lampo di luce
+            function createLightFlash(volume) {
+                const flash = document.createElement('div');
+                flash.className = 'light-flash';
+                // Posizione randomizzata per effetto dinamico
+                const x = Math.round(Math.random() * 100);
+                const y = Math.round(Math.random() * 100);
+                flash.style.setProperty('--x', `${x}%`);
+                flash.style.setProperty('--y', `${y}%`);
+                // Intensità e colore in base al volume
+                const intensity = Math.min(1, volume / 180);
+                flash.style.background = `radial-gradient(circle at ${x}% ${y}%, rgba(255,255,${Math.round(200 + volume/2)},${0.5 + intensity/2}) 0%, rgba(255,255,255,0.0) 70%)`;
+                flash.style.animationDuration = `${0.25 + Math.random() * 0.3}s`;
+                lightFlashContainer.appendChild(flash);
+                setTimeout(() => flash.remove(), 600);
+            }
+
+            // --- Nuova funzione per le barre di sfondo "esplosive" ---
+            const createBackgroundBar = (volume) => {
+                const bar = document.createElement('div');
+                bar.classList.add('background-bar');
+                backgroundBarContainer.appendChild(bar);
+
+                const baseSize = 100; // Dimensione base delle barre di sfondo
+                const size = baseSize + (volume * 1.5); // Cresce molto con il volume
+                const duration = 1.5 + (volume / 100); // Durata animazione più lunga per volume alto
+                const delay = Math.random() * 0.5; // Leggero ritardo casuale
+
+                bar.style.width = `${size}px`;
+                bar.style.height = `${size}px`;
+                bar.style.left = `${Math.random() * 100}vw`;
+                bar.style.top = `${Math.random() * 100}vh`;
+                bar.style.animation = `fadeOutAndScale ${duration}s ease-out forwards ${delay}s`;
+
+                // Colori dinamici in base al volume per le barre di sfondo
+                const hue = 0 + (volume * 1.5); // Da rosso a giallo
+                const saturation = 80 + (volume * 0.1);
+                const lightness = 60 + (volume * 0.1);
+                bar.style.background = `radial-gradient(circle, hsl(${hue}, ${saturation}%, ${lightness}%) 0%, transparent 70%)`;
+                bar.style.boxShadow = `0 0 ${15 + (volume * 0.2)}px hsl(${hue}, ${saturation}%, ${lightness}%, 0.8)`;
+
+                // Rimuovi l'elemento dopo l'animazione per evitare accumuli
+                bar.addEventListener('animationend', () => {
+                    bar.remove();
+                });
+            };
+
+
+            // Event listener per avviare l'AudioContext al play
+            audioPlayer.addEventListener('play', () => {
+                initAudioContext();
+                if (audioContext && audioContext.state === 'suspended') {
+                    audioContext.resume().then(() => {
+                        console.log("AudioContext ripreso!");
+                        drawSpectrumVisualizer();
+                    }).catch(e => console.error("Errore nel riprendere AudioContext:", e));
+                } else if (audioContext && audioContext.state === 'running') {
+                    drawSpectrumVisualizer();
+                }
+            });
+
+            audioPlayer.addEventListener('pause', () => {
+                spectrumBars.forEach(bar => {
+                    bar.style.height = '3px';
+                    bar.style.background = 'var(--secondary-accent)';
+                    bar.style.boxShadow = 'none';
+                    bar.style.setProperty('--echo-height', '0');
+                    bar.style.setProperty('--echo-opacity', '0');
+                });
+            });
+
+            audioPlayer.addEventListener('ended', () => {
+                spectrumBars.forEach(bar => {
+                    bar.style.height = '3px';
+                    bar.style.background = 'var(--secondary-accent)';
+                    bar.style.boxShadow = 'none';
+                    bar.style.setProperty('--echo-height', '0');
+                    bar.style.setProperty('--echo-opacity', '0');
+                });
+            });
+
+            // Imposta le barre del visualizzatore classico al minimo all'avvio
+            spectrumBars.forEach(bar => bar.style.height = '3px');
+
+            // --- Animazione Scroll Reveal per le sezioni ---
+            const observerOptions = {
+                root: null, // viewport
+                rootMargin: '0px',
+                threshold: 0.2 // Entra in visuale per il 20%
+            };
+
+            const sectionObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0) scale(1)';
+                        observer.unobserve(entry.target); // Ferma l'osservazione una volta animato
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(50px) scale(0.95)';
+                section.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+                sectionObserver.observe(section);
+            });
+
+            // --- Animazione Particelle/Stelle di sfondo ---
+            const starBg = document.querySelector('.star-background');
+
+            const createStar = () => {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = `${Math.random() * 100}vw`;
+                star.style.top = `${Math.random() * 100}vh`;
+                star.style.animationDuration = `${Math.random() * 3 + 2}s`;
+                star.style.animationDelay = `${Math.random() * 2}s`;
+                star.style.opacity = `${Math.random() * 0.5 + 0.5}`;
+                star.style.setProperty('--rand-x', Math.random() * 2 - 1); /* -1 to 1 */
+                star.style.setProperty('--rand-y', Math.random() * 2 - 1); /* -1 to 1 */
+                starBg.appendChild(star);
+
+                // Rimuovi la stella dopo un po' per evitare accumuli eccessivi
+                setTimeout(() => star.remove(), 20000); // 20 secondi
+            };
+
+            // Genera un flusso continuo di stelle
+            setInterval(createStar, 500); // Crea una nuova stella ogni 0.5 secondi
+
+            // Genera alcune stelle iniziali
+            for (let i = 0; i < 50; i++) {
+                createStar();
+            }
+        });
+    </script>
+</body>
+</html>
